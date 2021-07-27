@@ -292,16 +292,21 @@ export class InternalBinaryWrite implements CustomMethodGenerator {
             ts.createIdentifier(field.oneof)
         );
 
+        let condition = ts.createBinary(
+            ts.createPropertyAccess(
+                groupPropertyAccess,
+                ts.createIdentifier(this.options.oneofKindDiscriminator)
+            ),
+            ts.createToken(ts.SyntaxKind.EqualsEqualsEqualsToken),
+            ts.createStringLiteral(field.localName)
+        );
+
+        ts.addSyntheticLeadingComment(condition, ts.SyntaxKind.MultiLineCommentTrivia, ' ' + 'aaaaaaaaa' + ' ', true);
+
         let statement = ts.createIf(
             // if (message.result.oneofKind === 'value')
-            ts.createBinary(
-                ts.createPropertyAccess(
-                    groupPropertyAccess,
-                    ts.createIdentifier(this.options.oneofKindDiscriminator)
-                ),
-                ts.createToken(ts.SyntaxKind.EqualsEqualsEqualsToken),
-                ts.createStringLiteral(field.localName)
-            ),
+            condition
+            ,
             // writer.tag( <field no>, <wire type> ).string(message.stringField)
             ts.createExpressionStatement(
                 this.makeWriterCall(
